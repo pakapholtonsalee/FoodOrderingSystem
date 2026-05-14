@@ -15,7 +15,7 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    // POST /api/orders — สร้างออเดอร์ใหม่
+    // POST /api/orders
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
     {
@@ -23,7 +23,7 @@ public class OrdersController : ControllerBase
         return Ok(OrderToDto(order));
     }
 
-    // GET /api/orders — ดูออเดอร์ทั้งหมด (เรียงล่าสุดก่อน)
+    // GET /api/orders
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -31,7 +31,7 @@ public class OrdersController : ControllerBase
         return Ok(orders.Select(OrderToDto));
     }
 
-    // GET /api/orders/{id} — ดูออเดอร์ตาม ID
+    // GET /api/orders/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -39,7 +39,7 @@ public class OrdersController : ControllerBase
         return order == null ? NotFound() : Ok(OrderToDto(order));
     }
 
-    // PATCH /api/orders/{id}/status — อัปเดตสถานะออเดอร์
+    // PATCH /api/orders/{id}/status
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
     {
@@ -47,26 +47,41 @@ public class OrdersController : ControllerBase
         return order == null ? NotFound() : Ok(OrderToDto(order));
     }
 
-    // แปลง Order → DTO ที่ส่งให้ Client (ส่ง Items เป็น List<string> เลย)
     private static object OrderToDto(Order o) => new
     {
         o.Id,
-        o.CustomerName,
-        o.RestaurantId,
+        CustomerId = o.CustomerId,
+        CustomerName = o.Customer?.Username ?? "",
+        RestaurantId = o.RestaurantId,
+        RestaurantName = o.Restaurant?.Name ?? "",
+        ChefId = o.ChefId,
+        RiderId = o.RiderId,
         o.Status,
-        o.CreatedAt,
-        o.Items,
-        o.Total
+        o.TotalPrice,
+        OrderDate = o.OrderDate,
+        Items = o.Items.Select(i => new {
+            i.FoodName,
+            i.Quantity,
+            i.Price
+        }).ToList()
     };
 }
 
+// ── Request DTOs ──────────────────────────────────────────────
+
 public class CreateOrderRequest
 {
-    public string CustomerName { get; set; } = "";
-    public int RestaurantId { get; set; }
+    public int? CustomerId { get; set; }   // FK → users.id
+    public int? RestaurantId { get; set; }   // FK → restaurants.id
     public string? Status { get; set; }
-    public List<string> Items { get; set; } = new();
-    public int Total { get; set; }
+    public List<OrderItemRequest> Items { get; set; } = new();
+}
+
+public class OrderItemRequest
+{
+    public string FoodName { get; set; } = "";
+    public int Quantity { get; set; } = 1;
+    public decimal Price { get; set; }
 }
 
 public class UpdateStatusRequest

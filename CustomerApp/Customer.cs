@@ -67,9 +67,10 @@ public partial class Customer : Form
         btn.ForeColor = Color.White;
         btn.FlatStyle = FlatStyle.Flat;
         btn.FlatAppearance.BorderSize = 0;
-        btn.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+        btn.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
         btn.Cursor = Cursors.Hand;
-        btn.Height = 36;
+        btn.Height = 45;
+        btn.Padding = new Padding(8, 6, 8, 6);
     }
 
     void StyleListBox(ListBox lb)
@@ -155,11 +156,16 @@ public partial class Customer : Form
 
         var order = new
         {
-            customerName = "Customer",
+            customerId = 1,           // ← ใส่ id จริงของ user ที่ login (ตอนนี้ hardcode ไว้ก่อน)
             restaurantId = _restaurant.Id,
             status = "Pending",
-            items = _cartItems.Select(x => x.name).ToList(),
-            total = _total
+            items = _cartItems.Select(x => new   // ← เปลี่ยนจาก .Select(x => x.name)
+            {
+                foodName = x.name,
+                quantity = 1,
+                price = (decimal)x.price
+            }).ToList()
+            // ลบ total ออก เพราะ API คำนวณเองแล้ว
         };
 
         var json = JsonSerializer.Serialize(order);

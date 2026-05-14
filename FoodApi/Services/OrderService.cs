@@ -6,10 +6,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace FoodApi.Services;
 
-/// <summary>
-/// Business logic สำหรับออเดอร์ (Service Layer Pattern)
-/// แยก logic ออกจาก Controller และ Repository
-/// </summary>
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository _repo;
@@ -25,34 +21,47 @@ public class OrderService : IOrderService
     {
         var order = new Order
         {
-            CustomerName = request.CustomerName,
+            CustomerId = request.CustomerId,
             RestaurantId = request.RestaurantId,
             Status = request.Status ?? "Pending",
-            CreatedAt = DateTime.UtcNow,
-            Items = request.Items ?? new(),
-            Total = request.Total
+            OrderDate = DateTime.UtcNow,
+            Items = request.Items.Select(i => new OrderItem
+            {
+                FoodName = i.FoodName,
+                Quantity = i.Quantity,
+                Price = i.Price
+            }).ToList(),
+            TotalPrice = request.Items.Sum(i => i.Price * i.Quantity)
         };
 
         await _repo.CreateAsync(order);
 
-        // แจ้ง Restaurant ผ่าน SignalR ทันทีหลังสร้างออเดอร์
-        await _hub.Clients.All.SendAsync("NewOrder", order.Id, order.CustomerName, order.Items, order.Total);
+        await _hub.Clients.All.SendAsync(
+            "NewOrder",
+            order.Id,
+            order.Customer?.Username ?? "",
+            order.Restaurant?.Name ?? "",
+            order.Items.Select(i => i.FoodName).ToList(),
+            (int)order.TotalPrice,
+            order.Status
+        );
 
         return order;
     }
 
     public Task<List<Order>> GetAllOrdersAsync() => _repo.GetAllAsync();
-
     public Task<Order?> GetOrderByIdAsync(int id) => _repo.GetByIdAsync(id);
 
     public async Task<Order?> ChangeOrderStatusAsync(int id, string newStatus)
     {
+        // ✅ ตรงกับ CHECK constraint ใน table
+        var allowed = new[] { "Pending", "Confirmed", "Preparing", "Ready", "PickedUp", "Delivered", "Cancelled" };
+        if (!allowed.Contains(newStatus)) return null;
+
         var order = await _repo.UpdateStatusAsync(id, newStatus);
         if (order == null) return null;
 
-        // แจ้ง Client ทุกคนว่าสถานะเปลี่ยน
         await _hub.Clients.All.SendAsync("OrderStatusChanged", order.Id, order.Status);
-
         return order;
     }
 }

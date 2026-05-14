@@ -2,9 +2,6 @@
 
 namespace FoodApi.Repositories;
 
-/// <summary>
-/// กำหนด contract สำหรับการ CRUD ออเดอร์
-/// </summary>
 public interface IOrderRepository
 {
     Task<Order> CreateAsync(Order order);

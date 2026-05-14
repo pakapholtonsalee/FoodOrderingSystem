@@ -123,16 +123,17 @@
             this.lblMenuTitle.Padding = new System.Windows.Forms.Padding(4, 4, 0, 0);
 
             // listBoxMenu
-            this.listBoxMenu.Location = new System.Drawing.Point(0, 32);
             this.listBoxMenu.Name = "listBoxMenu";
-            this.listBoxMenu.Size = new System.Drawing.Size(284, 260);
+            this.listBoxMenu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxMenu.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             this.listBoxMenu.TabIndex = 0;
 
             // btnAdd
-            this.btnAdd.Location = new System.Drawing.Point(0, 300);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(284, 36);
             this.btnAdd.Text = "➕ เพิ่ม";
+            this.btnAdd.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnAdd.Height = 45;
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(0, 10, 0, 0);
             this.btnAdd.TabIndex = 1;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
 
@@ -153,16 +154,17 @@
             this.lblCartTitle.Padding = new System.Windows.Forms.Padding(4, 4, 0, 0);
 
             // listBoxCart
-            this.listBoxCart.Location = new System.Drawing.Point(16, 32);
             this.listBoxCart.Name = "listBoxCart";
-            this.listBoxCart.Size = new System.Drawing.Size(300, 260);
+            this.listBoxCart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxCart.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             this.listBoxCart.TabIndex = 2;
 
             // btnRemove
-            this.btnRemove.Location = new System.Drawing.Point(16, 300);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(300, 36);
             this.btnRemove.Text = "✖ ลบ";
+            this.btnRemove.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnRemove.Height = 45;
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(0, 10, 0, 0);
             this.btnRemove.TabIndex = 3;
             this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
 

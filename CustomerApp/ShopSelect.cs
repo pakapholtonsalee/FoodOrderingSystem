@@ -8,7 +8,7 @@ public partial class ShopSelect : Form
     {
         InitializeComponent();
         this.Text = "🍽️ Food Order - เลือกร้านอาหาร";
-        this.BackColor = Color.FromArgb(255, 248, 240);
+        this.BackColor = Color.FromArgb(232, 245, 233);
         this.StartPosition = FormStartPosition.CenterScreen;
     }
 
@@ -23,8 +23,8 @@ public partial class ShopSelect : Form
             Tag = "Italian · Fastfood",
             DeliveryTime = "25–35 นาที",
             Rating = 4.8f,
-            BackColor1 = Color.FromArgb(255, 107, 107),
-            BackColor2 = Color.FromArgb(255, 75, 75),
+            BackColor1 = Color.FromArgb(76, 175, 80),
+            BackColor2 = Color.FromArgb(46, 125, 50),
             Menu = new Dictionary<string, int>
             {
                 { "🍕 Margherita Pizza", 199 },
@@ -42,8 +42,8 @@ public partial class ShopSelect : Form
             Tag = "American · Grill",
             DeliveryTime = "20–30 นาที",
             Rating = 4.6f,
-            BackColor1 = Color.FromArgb(255, 167, 38),
-            BackColor2 = Color.FromArgb(230, 140, 20),
+            BackColor1 = Color.FromArgb(76, 175, 80),
+            BackColor2 = Color.FromArgb(46, 125, 50),
             Menu = new Dictionary<string, int>
             {
                 { "🍔 Classic Burger", 129 },
@@ -67,7 +67,40 @@ public partial class ShopSelect : Form
     {
         base.OnLoad(e);
 
-        // Header Panel
+        // Cards panel (add first so it fills the space)
+        var cardsPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            BackColor = Color.FromArgb(232, 245, 233),
+            Padding = new Padding(30, 20, 30, 20),
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
+            AutoScroll = true,
+        };
+
+        foreach (var restaurant in Restaurants)
+        {
+            var card = CreateRestaurantCard(restaurant);
+            cardsPanel.Controls.Add(card);
+        }
+
+        this.Controls.Add(cardsPanel);
+
+        // Subtitle (add before header so it's on top)
+        var lblSub = new Label
+        {
+            Text = "มีร้านให้เลือก " + Restaurants.Length + " ร้าน",
+            Font = new Font("Segoe UI", 10),
+            ForeColor = Color.FromArgb(120, 80, 50),
+            AutoSize = false,
+            Height = 30,
+            Dock = DockStyle.Top,
+            TextAlign = ContentAlignment.MiddleCenter,
+            BackColor = Color.FromArgb(46, 125, 50),
+        };
+        this.Controls.Add(lblSub);
+
+        // Header Panel (add last so it stays on top)
         var header = new Panel
         {
             Dock = DockStyle.Top,
@@ -86,39 +119,6 @@ public partial class ShopSelect : Form
         };
         header.Controls.Add(lblTitle);
         this.Controls.Add(header);
-
-        // Subtitle
-        var lblSub = new Label
-        {
-            Text = "มีร้านให้เลือก " + Restaurants.Length + " ร้าน",
-            Font = new Font("Segoe UI", 10),
-            ForeColor = Color.FromArgb(120, 80, 50),
-            AutoSize = false,
-            Height = 30,
-            Dock = DockStyle.Top,
-            TextAlign = ContentAlignment.MiddleCenter,
-            BackColor = Color.FromArgb(255, 248, 240),
-        };
-        this.Controls.Add(lblSub);
-
-        // Cards panel
-        var cardsPanel = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            BackColor = Color.FromArgb(255, 248, 240),
-            Padding = new Padding(30, 20, 30, 20),
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
-            AutoScroll = true,
-        };
-
-        foreach (var restaurant in Restaurants)
-        {
-            var card = CreateRestaurantCard(restaurant);
-            cardsPanel.Controls.Add(card);
-        }
-
-        this.Controls.Add(cardsPanel);
     }
 
     private Panel CreateRestaurantCard(Restaurant restaurant)
@@ -131,6 +131,21 @@ public partial class ShopSelect : Form
             BackColor = Color.White,
             Cursor = Cursors.Hand,
         };
+
+        // Arrow button (add before paint so it's created first)
+        var btnEnter = new Button
+        {
+            Text = "เลือก  ›",
+            Font = new Font("Segoe UI", 9, FontStyle.Bold),
+            ForeColor = Color.White,
+            BackColor = restaurant.BackColor1,
+            FlatStyle = FlatStyle.Flat,
+            Location = new Point(385, 88),
+            Size = new Size(80, 28),
+            Cursor = Cursors.Hand,
+        };
+        btnEnter.FlatAppearance.BorderSize = 0;
+        btnEnter.Click += (s, e) => OpenRestaurant(restaurant);
 
         // Shadow effect via border
         card.Paint += (s, e) =>
@@ -169,7 +184,6 @@ public partial class ShopSelect : Form
             TextAlign = ContentAlignment.MiddleCenter,
             BackColor = Color.Transparent,
         };
-        card.Controls.Add(lblEmoji);
 
         // Restaurant name
         var lblName = new Label
@@ -181,7 +195,6 @@ public partial class ShopSelect : Form
             Size = new Size(300, 28),
             BackColor = Color.Transparent,
         };
-        card.Controls.Add(lblName);
 
         // Description
         var lblDesc = new Label
@@ -193,7 +206,6 @@ public partial class ShopSelect : Form
             Size = new Size(300, 20),
             BackColor = Color.Transparent,
         };
-        card.Controls.Add(lblDesc);
 
         // Tag
         var lblTag = new Label
@@ -205,7 +217,6 @@ public partial class ShopSelect : Form
             Size = new Size(200, 18),
             BackColor = Color.Transparent,
         };
-        card.Controls.Add(lblTag);
 
         // Rating
         var lblRating = new Label
@@ -217,7 +228,6 @@ public partial class ShopSelect : Form
             Size = new Size(90, 20),
             BackColor = Color.Transparent,
         };
-        card.Controls.Add(lblRating);
 
         // Delivery time
         var lblTime = new Label
@@ -229,23 +239,18 @@ public partial class ShopSelect : Form
             Size = new Size(150, 20),
             BackColor = Color.Transparent,
         };
+
+        // Add all non-button controls to card
+        card.Controls.Add(lblEmoji);
+        card.Controls.Add(lblName);
+        card.Controls.Add(lblDesc);
+        card.Controls.Add(lblTag);
+        card.Controls.Add(lblRating);
         card.Controls.Add(lblTime);
 
-        // Arrow button
-        var btnEnter = new Button
-        {
-            Text = "เลือก  ›",
-            Font = new Font("Segoe UI", 9, FontStyle.Bold),
-            ForeColor = Color.White,
-            BackColor = restaurant.BackColor1,
-            FlatStyle = FlatStyle.Flat,
-            Location = new Point(370, 88),
-            Size = new Size(80, 28),
-            Cursor = Cursors.Hand,
-        };
-        btnEnter.FlatAppearance.BorderSize = 0;
-        btnEnter.Click += (s, e) => OpenRestaurant(restaurant);
+        // Add button last and bring to front
         card.Controls.Add(btnEnter);
+        btnEnter.BringToFront();
 
         // Click whole card
         card.Click += (s, e) => OpenRestaurant(restaurant);

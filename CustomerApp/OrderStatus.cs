@@ -33,48 +33,29 @@ public partial class OrderStatus : Form
         this.Size = new Size(620, 580);
         this.MinimumSize = new Size(560, 480);
 
-        // Header
-        var header = new Panel
-        {
-            Dock = DockStyle.Top,
-            Height = 75,
-            BackColor = Color.FromArgb(63, 81, 181),
-        };
-
-        var lblTitle = new Label
-        {
-            Text = "📊  สถานะออเดอร์",
-            Font = new Font("Segoe UI", 18, FontStyle.Bold),
-            ForeColor = Color.White,
-            Dock = DockStyle.Fill,
-            TextAlign = ContentAlignment.MiddleCenter,
-        };
-        header.Controls.Add(lblTitle);
-        this.Controls.Add(header);
-
-        // Legend
-        var legendPanel = new Panel
-        {
-            Dock = DockStyle.Top,
-            Height = 44,
-            BackColor = Color.FromArgb(230, 232, 255),
-            Padding = new Padding(12, 8, 12, 8),
-        };
-
-        var legendFlow = new FlowLayoutPanel
+        // Scrollable orders panel (add first so it fills the space)
+        var scroll = new Panel
         {
             Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.LeftToRight,
+            AutoScroll = true,
+            BackColor = Color.FromArgb(245, 245, 250),
+            Padding = new Padding(16, 12, 16, 12),
+        };
+
+        _ordersPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            FlowDirection = FlowDirection.TopDown,
+            WrapContents = false,
             BackColor = Color.Transparent,
         };
 
-        legendFlow.Controls.Add(MakeLegendChip("⏳ รอรับออเดอร์", Color.FromArgb(255, 152, 0)));
-        legendFlow.Controls.Add(MakeLegendChip("👨‍🍳 กำลังจัดเตรียม", Color.FromArgb(33, 150, 243)));
-        legendFlow.Controls.Add(MakeLegendChip("✅ เสร็จแล้ว", Color.FromArgb(76, 175, 80)));
-        legendPanel.Controls.Add(legendFlow);
-        this.Controls.Add(legendPanel);
+        scroll.Controls.Add(_ordersPanel);
+        this.Controls.Add(scroll);
 
-        // Toolbar
+        // Toolbar (add before legend so it's on top)
         var toolbar = new Panel
         {
             Dock = DockStyle.Top,
@@ -114,27 +95,48 @@ public partial class OrderStatus : Form
 
         this.Controls.Add(toolbar);
 
-        // Scrollable orders panel
-        var scroll = new Panel
-        {
-            Dock = DockStyle.Fill,
-            AutoScroll = true,
-            BackColor = Color.FromArgb(245, 245, 250),
-            Padding = new Padding(16, 12, 16, 12),
-        };
-
-        _ordersPanel = new FlowLayoutPanel
+        // Legend
+        var legendPanel = new Panel
         {
             Dock = DockStyle.Top,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            FlowDirection = FlowDirection.TopDown,
-            WrapContents = false,
+            Height = 44,
+            BackColor = Color.FromArgb(230, 232, 255),
+            Padding = new Padding(12, 8, 12, 8),
+        };
+
+        var legendFlow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.LeftToRight,
             BackColor = Color.Transparent,
         };
 
-        scroll.Controls.Add(_ordersPanel);
-        this.Controls.Add(scroll);
+        legendFlow.Controls.Add(MakeLegendChip("⏳ รอรับออเดอร์", Color.FromArgb(255, 152, 0)));
+        legendFlow.Controls.Add(MakeLegendChip("👨‍🍳 กำลังจัดเตรียม", Color.FromArgb(33, 150, 243)));
+        legendFlow.Controls.Add(MakeLegendChip("✅ เสร็จแล้ว", Color.FromArgb(76, 175, 80)));
+        legendFlow.Controls.Add(MakeLegendChip("🛵 กำลังเดินทางจัดส่งอาหาร", Color.FromArgb(46, 125, 50)));
+        legendFlow.Controls.Add(MakeLegendChip("🎉 จัดส่งสำเร็จ", Color.FromArgb(27, 94, 32)));
+        legendPanel.Controls.Add(legendFlow);
+        this.Controls.Add(legendPanel);
+
+        // Header (add last so it's on top)
+        var header = new Panel
+        {
+            Dock = DockStyle.Top,
+            Height = 75,
+            BackColor = Color.FromArgb(63, 81, 181),
+        };
+
+        var lblTitle = new Label
+        {
+            Text = "📊  สถานะออเดอร์",
+            Font = new Font("Segoe UI", 18, FontStyle.Bold),
+            ForeColor = Color.White,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleCenter,
+        };
+        header.Controls.Add(lblTitle);
+        this.Controls.Add(header);
     }
 
     private Label MakeLegendChip(string text, Color color)
@@ -203,7 +205,7 @@ public partial class OrderStatus : Form
         }
 
         // Show most recent first
-        foreach (var order in orders.OrderByDescending(o => o.CreatedAt))
+        foreach (var order in orders.OrderByDescending(o => o.OrderDate))
         {
             var card = CreateOrderCard(order);
             _ordersPanel.Controls.Add(card);
@@ -295,7 +297,7 @@ public partial class OrderStatus : Form
         // Total
         var lblTotal = new Label
         {
-            Text = $"💰 ฿{order.Total:N0}",
+            Text = $"💰 ฿{order.TotalPrice:N0}",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = Color.FromArgb(180, 60, 20),
             Location = new Point(16, 60),
@@ -305,7 +307,7 @@ public partial class OrderStatus : Form
         card.Controls.Add(lblTotal);
 
         // Created at
-        var localTime = order.CreatedAt.ToLocalTime();
+        var localTime = order.OrderDate.ToLocalTime();
         var lblTime = new Label
         {
             Text = "🕐 " + localTime.ToString("dd/MM HH:mm"),
@@ -407,7 +409,9 @@ public partial class OrderStatus : Form
         return status?.ToLower() switch
         {
             "preparing" => ("👨‍🍳", "กำลังจัดเตรียม", Color.FromArgb(33, 150, 243)),
-            "ready" or "completed" or "done" => ("✅", "เสร็จแล้ว", Color.FromArgb(76, 175, 80)),
+            "completed" => ("✅", "ร้านทำเสร็จแล้ว", Color.FromArgb(76, 175, 80)),
+            "delivering" => ("🛵", "กำลังเดินทางจัดส่งอาหาร", Color.FromArgb(46, 125, 50)),
+            "delivered" => ("🎉", "จัดส่งสำเร็จ", Color.FromArgb(27, 94, 32)),
             _ => ("⏳", "รอรับออเดอร์", Color.FromArgb(255, 152, 0)),
         };
     }
@@ -426,8 +430,17 @@ public class OrderDto
     public int Id { get; set; }
     public string CustomerName { get; set; } = "";
     public int RestaurantId { get; set; }
+    public string RestaurantName { get; set; } = "";
     public string Status { get; set; } = "Pending";
-    public DateTime CreatedAt { get; set; }
-    public List<string> Items { get; set; } = new();   // รับเป็น List<string> ตรงๆ
-    public int Total { get; set; }
+    public DateTime OrderDate { get; set; }     // ← เปลี่ยนจาก CreatedAt
+    public decimal TotalPrice { get; set; }     // ← เปลี่ยนจาก Total (int → decimal)
+    public List<OrderItemDto> Items { get; set; } = new();   // ← เปลี่ยนจาก List<string>
+}
+
+public class OrderItemDto
+{
+    public int Id { get; set; }
+    public string FoodName { get; set; } = "";
+    public int Quantity { get; set; }
+    public decimal Price { get; set; }
 }

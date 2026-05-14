@@ -3,9 +3,6 @@ using FoodApi.Models;
 
 namespace FoodApi.Services;
 
-/// <summary>
-/// กำหนด contract สำหรับ business logic ของออเดอร์
-/// </summary>
 public interface IOrderService
 {
     Task<Order> PlaceOrderAsync(CreateOrderRequest request);

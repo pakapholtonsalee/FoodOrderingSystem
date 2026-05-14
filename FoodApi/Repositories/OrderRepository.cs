@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodApi.Repositories;
 
-/// <summary>
-/// จัดการ database สำหรับออเดอร์ (Repository Pattern)
-/// แยก logic การเข้าถึง DB ออกจาก Controller
-/// </summary>
 public class OrderRepository : IOrderRepository
 {
     private readonly FoodContext _context;
@@ -21,19 +17,31 @@ public class OrderRepository : IOrderRepository
     {
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
-        return order;
+        // โหลด relations หลัง save
+        return await GetByIdAsync(order.Id) ?? order;
     }
 
     public async Task<List<Order>> GetAllAsync()
     {
         return await _context.Orders
-            .OrderByDescending(o => o.CreatedAt)
+            .Include(o => o.Customer)
+            .Include(o => o.Restaurant)
+            .Include(o => o.Chef)
+            .Include(o => o.Rider)
+            .Include(o => o.Items)       // <-- แทน ItemsJson เดิม
+            .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
     }
 
     public async Task<Order?> GetByIdAsync(int id)
     {
-        return await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
+        return await _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.Restaurant)
+            .Include(o => o.Chef)
+            .Include(o => o.Rider)
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id);
     }
 
     public async Task<Order?> UpdateStatusAsync(int id, string status)

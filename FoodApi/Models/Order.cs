@@ -1,29 +1,25 @@
-﻿using System.Text.Json;
-
-namespace FoodApi.Models;
+﻿namespace FoodApi.Models;
 
 public class Order
 {
     public int Id { get; set; }
 
-    public string CustomerName { get; set; } = "";
+    public int? CustomerId { get; set; }
+    public User? Customer { get; set; }
 
-    public int RestaurantId { get; set; }
+    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
+
+    public int? ChefId { get; set; }
+    public User? Chef { get; set; }
+
+    public int? RiderId { get; set; }
+    public User? Rider { get; set; }
 
     public string Status { get; set; } = "Pending";
+    public decimal TotalPrice { get; set; } = 0;
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-    public DateTime CreatedAt { get; set; }
-
-    // เก็บเป็น JSON string ใน DB แทน List<string>
-    public string ItemsJson { get; set; } = "[]";
-
-    // Property ที่ใช้ใน code ปกติ (ไม่เก็บใน DB)
-    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
-    public List<string> Items
-    {
-        get => JsonSerializer.Deserialize<List<string>>(ItemsJson) ?? new();
-        set => ItemsJson = JsonSerializer.Serialize(value);
-    }
-
-    public int Total { get; set; }
+    // Navigation property
+    public List<OrderItem> Items { get; set; } = new();
 }
