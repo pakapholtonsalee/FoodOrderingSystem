@@ -114,6 +114,8 @@ public partial class OrderStatus : Form
         legendFlow.Controls.Add(MakeLegendChip("⏳ รอรับออเดอร์", Color.FromArgb(255, 152, 0)));
         legendFlow.Controls.Add(MakeLegendChip("👨‍🍳 กำลังจัดเตรียม", Color.FromArgb(33, 150, 243)));
         legendFlow.Controls.Add(MakeLegendChip("✅ เสร็จแล้ว", Color.FromArgb(76, 175, 80)));
+        legendFlow.Controls.Add(MakeLegendChip("🛵 กำลังเดินทางจัดส่งอาหาร", Color.FromArgb(46, 125, 50)));
+        legendFlow.Controls.Add(MakeLegendChip("🎉 จัดส่งสำเร็จ", Color.FromArgb(27, 94, 32)));
         legendPanel.Controls.Add(legendFlow);
         this.Controls.Add(legendPanel);
 
@@ -407,7 +409,9 @@ public partial class OrderStatus : Form
         return status?.ToLower() switch
         {
             "preparing" => ("👨‍🍳", "กำลังจัดเตรียม", Color.FromArgb(33, 150, 243)),
-            "ready" or "completed" or "done" => ("✅", "เสร็จแล้ว", Color.FromArgb(76, 175, 80)),
+            "completed" => ("✅", "ร้านทำเสร็จแล้ว", Color.FromArgb(76, 175, 80)),
+            "delivering" => ("🛵", "กำลังเดินทางจัดส่งอาหาร", Color.FromArgb(46, 125, 50)),
+            "delivered" => ("🎉", "จัดส่งสำเร็จ", Color.FromArgb(27, 94, 32)),
             _ => ("⏳", "รอรับออเดอร์", Color.FromArgb(255, 152, 0)),
         };
     }

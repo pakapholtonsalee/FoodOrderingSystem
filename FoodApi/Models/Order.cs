@@ -10,6 +10,8 @@ public class Order
 
     public int RestaurantId { get; set; }
 
+    public string RestaurantName { get; set; } = "";
+
     public string Status { get; set; } = "Pending";
 
     public DateTime CreatedAt { get; set; }

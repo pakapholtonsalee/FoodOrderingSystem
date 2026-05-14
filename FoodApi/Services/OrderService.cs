@@ -27,6 +27,7 @@ public class OrderService : IOrderService
         {
             CustomerName = request.CustomerName,
             RestaurantId = request.RestaurantId,
+            RestaurantName = request.RestaurantName,
             Status = request.Status ?? "Pending",
             CreatedAt = DateTime.UtcNow,
             Items = request.Items ?? new(),
@@ -36,7 +37,15 @@ public class OrderService : IOrderService
         await _repo.CreateAsync(order);
 
         // แจ้ง Restaurant ผ่าน SignalR ทันทีหลังสร้างออเดอร์
-        await _hub.Clients.All.SendAsync("NewOrder", order.Id, order.CustomerName, order.Items, order.Total);
+        await _hub.Clients.All.SendAsync(
+            "NewOrder",
+            order.Id,
+            order.CustomerName,
+            order.RestaurantName,
+            order.Items,
+            order.Total,
+            order.Status
+        );
 
         return order;
     }
@@ -47,10 +56,21 @@ public class OrderService : IOrderService
 
     public async Task<Order?> ChangeOrderStatusAsync(int id, string newStatus)
     {
+        var allowedStatuses = new[]
+        {
+        "Pending",
+        "Preparing",
+        "Completed",
+        "Delivering",
+        "Delivered"
+    };
+
+        if (!allowedStatuses.Contains(newStatus))
+            return null;
+
         var order = await _repo.UpdateStatusAsync(id, newStatus);
         if (order == null) return null;
 
-        // แจ้ง Client ทุกคนว่าสถานะเปลี่ยน
         await _hub.Clients.All.SendAsync("OrderStatusChanged", order.Id, order.Status);
 
         return order;

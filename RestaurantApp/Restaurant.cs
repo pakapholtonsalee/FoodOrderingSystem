@@ -55,8 +55,8 @@ public partial class Restaurant : Form
             .Build();
 
         // รับออเดอร์ใหม่ real-time
-        _connection.On<int, string, List<string>, int>("NewOrder",
-            (orderId, customer, items, total) =>
+        _connection.On<int, string, string, List<string>, int, string>("NewOrder",
+            (orderId, customer, restaurantName, items, total, status) =>
                 Invoke(() => AddOrderToList(orderId, customer, items, total)));
 
         // รับการเปลี่ยนสถานะ real-time
@@ -103,6 +103,8 @@ public partial class Restaurant : Form
         {
             "Preparing" => "👨‍🍳 กำลังจัดเตรียม",
             "Completed" => "✅ เสร็จแล้ว",
+            "Delivering" => "🛵 กำลังเดินทางจัดส่งอาหาร",
+            "Delivered" => "🎉 จัดส่งสำเร็จ",
             _ => "⏳ รอรับออเดอร์",
         };
 

@@ -8,7 +8,7 @@ public partial class ShopSelect : Form
     {
         InitializeComponent();
         this.Text = "🍽️ Food Order - เลือกร้านอาหาร";
-        this.BackColor = Color.FromArgb(255, 248, 240);
+        this.BackColor = Color.FromArgb(232, 245, 233);
         this.StartPosition = FormStartPosition.CenterScreen;
     }
 
@@ -23,8 +23,8 @@ public partial class ShopSelect : Form
             Tag = "Italian · Fastfood",
             DeliveryTime = "25–35 นาที",
             Rating = 4.8f,
-            BackColor1 = Color.FromArgb(255, 107, 107),
-            BackColor2 = Color.FromArgb(255, 75, 75),
+            BackColor1 = Color.FromArgb(76, 175, 80),
+            BackColor2 = Color.FromArgb(46, 125, 50),
             Menu = new Dictionary<string, int>
             {
                 { "🍕 Margherita Pizza", 199 },
@@ -42,8 +42,8 @@ public partial class ShopSelect : Form
             Tag = "American · Grill",
             DeliveryTime = "20–30 นาที",
             Rating = 4.6f,
-            BackColor1 = Color.FromArgb(255, 167, 38),
-            BackColor2 = Color.FromArgb(230, 140, 20),
+            BackColor1 = Color.FromArgb(76, 175, 80),
+            BackColor2 = Color.FromArgb(46, 125, 50),
             Menu = new Dictionary<string, int>
             {
                 { "🍔 Classic Burger", 129 },
@@ -71,7 +71,7 @@ public partial class ShopSelect : Form
         var cardsPanel = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
-            BackColor = Color.FromArgb(255, 248, 240),
+            BackColor = Color.FromArgb(232, 245, 233),
             Padding = new Padding(30, 20, 30, 20),
             FlowDirection = FlowDirection.TopDown,
             WrapContents = false,
@@ -96,7 +96,7 @@ public partial class ShopSelect : Form
             Height = 30,
             Dock = DockStyle.Top,
             TextAlign = ContentAlignment.MiddleCenter,
-            BackColor = Color.FromArgb(255, 248, 240),
+            BackColor = Color.FromArgb(46, 125, 50),
         };
         this.Controls.Add(lblSub);
 

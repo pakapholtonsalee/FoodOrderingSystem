@@ -53,6 +53,7 @@ public class OrdersController : ControllerBase
         o.Id,
         o.CustomerName,
         o.RestaurantId,
+        o.RestaurantName,
         o.Status,
         o.CreatedAt,
         o.Items,
@@ -64,6 +65,7 @@ public class CreateOrderRequest
 {
     public string CustomerName { get; set; } = "";
     public int RestaurantId { get; set; }
+    public string RestaurantName { get; set; } = "";
     public string? Status { get; set; }
     public List<string> Items { get; set; } = new();
     public int Total { get; set; }
