@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+		<!-- กำหนดให้โปรเจกต์นี้เป็น Windows Application -->
+		<!-- เมื่อรันจะไม่มีหน้าต่าง Console สีดำแสดงขึ้นมา -->
+		<OutputType>WinExe</OutputType>
+
+		<!-- กำหนด Framework ที่ใช้ คือ .NET 10 บน Windows -->
+		<!-- จำเป็นสำหรับการใช้งาน Windows Forms -->
+		<TargetFramework>net10.0-windows</TargetFramework>
+
+		<!-- เปิดใช้งาน Nullable Reference Type -->
+		<!-- ช่วยลดปัญหา NullReferenceException -->
+		<Nullable>enable</Nullable>
+
+		<!-- ระบุว่าโปรเจกต์นี้ใช้ Windows Forms -->
+		<!-- เพื่อให้สามารถสร้าง Form, Button, Label และ UI ต่าง ๆ ได้ -->
+		<UseWindowsForms>true</UseWindowsForms>
+
+		<!-- ให้ .NET import namespace พื้นฐานอัตโนมัติ -->
+		<!-- ลดการเขียน using ซ้ำในแต่ละไฟล์ -->
+		<ImplicitUsings>enable</ImplicitUsings>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+
+		<!-- ติดตั้ง SignalR Client -->
+		<!-- ใช้สำหรับเชื่อมต่อกับ Backend แบบ Real-time -->
+		<!-- Rider App ใช้รับสถานะออเดอร์และออเดอร์ใหม่ทันที -->
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
+
+	</ItemGroup>
+
+</Project>

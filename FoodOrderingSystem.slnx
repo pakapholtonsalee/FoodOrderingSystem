@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CustomerApp/CustomerApp.csproj" Id="df98b8f0-22a5-4ec7-98d2-3f95f369b1ff" />
+  <Project Path="FoodApi/FoodApi.csproj" />
+  <Project Path="RestaurantApp/RestaurantApp.csproj" />
+  <Project Path="RiderApp/RiderApp.csproj" />
+</Solution>
